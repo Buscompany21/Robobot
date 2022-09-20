@@ -30,8 +30,6 @@ public class Kobe extends Robot {
 		setScanColor(Color.green);
 
 		
-
-		// Spin gun back and forth
 		while (true) {
 			ahead(100);
 			turnGunRight(360);
@@ -40,15 +38,11 @@ public class Kobe extends Robot {
 		}
 	}
 
-	/**
-	 * onScannedRobot:  Stop and fire!
-	 */
-	public void onScannedRobot(ScannedRobotEvent e) {
-		// Should we stop, or just fire?       
+
+	public void onScannedRobot(ScannedRobotEvent e) { 
         double absoluteBearing = getHeading() + e.getBearing();
 		double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
 
-		// If it's close enough, fire!
 		if (Math.abs(bearingFromGun) <= 3) {
 			turnGunRight(bearingFromGun);
 			if (getGunHeat() == 0) {
@@ -58,9 +52,6 @@ public class Kobe extends Robot {
 		    else {
 			turnGunRight(bearingFromGun);
 		    }
-            // Generates another scan event if we see a robot.
-            // We only need to call this if the gun (and therefore radar)
-            // are not turning.  Otherwise, scan is called automatically.
             if (bearingFromGun == 0) {
                 scan();
             }
@@ -70,7 +61,6 @@ public class Kobe extends Robot {
 	}
 
 	public void onHitWall(HitWallEvent e) {
-		// When you hit wall, turn and back off from where you were
 		double bearing = e.getBearing();
 		turnRight(-bearing);
 		ahead(100);
@@ -95,8 +85,6 @@ public class Kobe extends Robot {
 	}
 
 	/**
-	 * smartFire:  Custom fire method that determines firepower based on distance.
-	 *
 	 * @param robotDistance the distance to the robot to fire at
 	 */
 	public void smartFire(double robotDistance) {
