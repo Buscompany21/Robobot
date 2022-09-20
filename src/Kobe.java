@@ -33,9 +33,9 @@ public class Kobe extends Robot {
 
 		// Spin gun back and forth
 		while (true) {
-			ahead(150);
+			ahead(100);
 			turnGunRight(360);
-			back(65);
+			back(50);
 			turnGunRight(360);
 		}
 	}
@@ -70,6 +70,7 @@ public class Kobe extends Robot {
 	}
 
 	public void onHitWall(HitWallEvent e) {
+		// When you hit wall, turn and back off from where you were
 		double bearing = e.getBearing();
 		turnRight(-bearing);
 		ahead(100);
@@ -79,6 +80,19 @@ public class Kobe extends Robot {
     public void onBulletHit(BulletHitEvent e){
         fire(4);
     }
+
+	public void onHitByBullet(HitByBulletEvent e) {
+		double currentEnergy = getEnergy();
+		double currentBearing = e.getBearing();
+		if (currentEnergy > 100){
+			// Check current energy and scan if > 100 to look for enemies to fight
+			turnGunRight(360);
+		} else {
+			// Back off a bit and let current energy recover to dodge incoming bullets
+			turnRight(-currentBearing);
+			ahead(100);
+		}
+	}
 
 	/**
 	 * smartFire:  Custom fire method that determines firepower based on distance.
