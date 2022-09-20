@@ -4,6 +4,8 @@ package IS;
 import robocode.DeathEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import robocode.HitWallEvent;
+import robocode.HitByBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.WinEvent;
 import static robocode.util.Utils.normalRelativeAngleDegrees;
@@ -14,6 +16,7 @@ import java.awt.*;
 
 public class Kobe extends Robot {
     boolean stopIfRobot = false;
+	boolean reverso = true;
 
 
 	public void run() {
@@ -28,71 +31,14 @@ public class Kobe extends Robot {
 
 		
 
-
-		// Move to a corner
-		goCorner();
-
-		// Initialize gun turn speed to 3
-		int gunIncrement = 3;
-
 		// Spin gun back and forth
 		while (true) {
-			for (int i = 0; i < 30; i++) {
-				turnGunLeft(gunIncrement);
-			}
-			gunIncrement *= -1;
+			ahead(150);
+			turnGunRight(360);
+			back(65);
+			turnGunRight(360);
 		}
 	}
-
-	
-	public void goCorner() {
-		double moveDistance = Math.max(getBattleFieldWidth(), getBattleFieldHeight());;
-        // We don't want to stop when we're just turning...
-		stopIfRobot = false;
-		// turn to face the wall to the "right" of our desired corner.
-		turnRight(normalRelativeAngleDegrees(90 - getHeading()));
-		// Ok, now we don't want to crash into any robot in our way...
-		stopIfRobot = true;
-		// Move to that wall
-		ahead(moveDistance);
-		// Turn to face the corner
-		turnRight(90);
-		// Move to the corner
-		ahead(moveDistance);
-		
-		
-        if (getX() == getBattleFieldWidth() & getY() == 0){
-            return;
-        }
-        else if (getY() == 0) {
-            doNothing();
-            turnRight(normalRelativeAngleDegrees(90 - getHeading()));
-            ahead(moveDistance - getX());    
-        }
-        else if (getX() == getBattleFieldWidth()) {
-            doNothing();
-            turnRight(90);
-            ahead(moveDistance - getY());
-        }
-        else {
-            doNothing();
-            stopIfRobot = false;
-            // turn to face the wall to the "right" of our desired corner.
-            turnRight(normalRelativeAngleDegrees(90 - getHeading()));
-            // Ok, now we don't want to crash into any robot in our way...
-            stopIfRobot = true;
-            // Move to that wall
-            ahead(moveDistance);
-            // Turn to face the corner
-            turnRight(90);
-            // Move to the corner
-            ahead(moveDistance);
-            
-        }
-        // Turn gun to starting point
-        turnGunRight(160);
-    }
-	
 
 	/**
 	 * onScannedRobot:  Stop and fire!
@@ -123,6 +69,13 @@ public class Kobe extends Robot {
        
 	}
 
+	public void onHitWall(HitWallEvent e) {
+		double bearing = e.getBearing();
+		turnRight(-bearing);
+		ahead(100);
+	}
+
+
     public void onBulletHit(BulletHitEvent e){
         fire(4);
     }
@@ -133,15 +86,15 @@ public class Kobe extends Robot {
 	 * @param robotDistance the distance to the robot to fire at
 	 */
 	public void smartFire(double robotDistance) {
-		if (robotDistance > 100 || getEnergy() < 20) {
-			fire(1);
-		} else if (robotDistance > 50 || getEnergy() < 30) {
-			fire(2);
-		}
-          else if (robotDistance > 25 || getEnergy() < 50) {
-			fire(3);
-		} else {
+		if (robotDistance > 500) {
 			fire(4);
+		} else if (robotDistance > 250) {
+			fire(3);
+		}
+          else if (robotDistance > 100) {
+			fire(2);
+		} else {
+			fire(1);
 		}
 	}
 
